@@ -31,7 +31,9 @@ public class Main {
             System.out.println("8. Sort Expenses by Date");
             System.out.println("9. Sort Expenses by Amount");
             System.out.println("10. Monthly Spending Summary");
-            System.out.println("11. Exit");
+            System.out.println("11. Search Expense by ID");
+            System.out.println("12. Search Expenses by Category");
+            System.out.println("13. Exit");
 
             System.out.print("Enter your choice: ");
 
@@ -69,11 +71,11 @@ public class Main {
                         break;
 
                     case 8:
-                        System.out.println("Sort by Date module is not connected yet.");
+                        SortingSearching.sortByDate();
                         break;
 
                     case 9:
-                        System.out.println("Sort by Amount module is not connected yet.");
+                        SortingSearching.sortByAmount();
                         break;
 
                     case 10:
@@ -81,8 +83,21 @@ public class Main {
                         break;
 
                     case 11:
-                        saveExpenses();
-                        System.out.println("Thank you for using Smart Expense Pattern Analyzer!");
+                        System.out.print("Enter Expense ID: ");
+                        int searchId = Integer.parseInt(sc.nextLine());
+
+                        SortingSearching.searchById(searchId);
+                        break;
+
+                    case 12:
+                        System.out.print("Enter Category: ");
+                        String category = sc.nextLine();
+
+                        SortingSearching.searchByCategory(category);
+                        break;
+
+                    case 13:
+                        System.out.println("Exiting program...");
                         break;
 
                     default:
@@ -94,7 +109,7 @@ public class Main {
                 choice = 0;
             }
 
-        } while (choice != 11);
+        } while (choice != 13);
     }
 
     // Add New Expense
