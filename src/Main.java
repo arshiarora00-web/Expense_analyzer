@@ -13,24 +13,19 @@ public class Main {
 
     public static final String FILE_NAME = "expenses.dat";
 
-
     public static void main(String[] args) {
 
         loadExpenses();
 
-        int choice = 0;
+        int choice;
 
         do {
-
-            System.out.println("\n========================================");
-            System.out.println("       SMART EXPENSE PATTERN ANALYZER");
-            System.out.println("========================================");
-
+            System.out.println("\n========== SMART EXPENSE PATTERN ANALYZER ==========");
             System.out.println("1. Add New Expense");
             System.out.println("2. View All Expenses");
             System.out.println("3. Update Expense");
             System.out.println("4. Delete Expense");
-            System.out.println("5. Category-wise Spending");
+            System.out.println("5. Category-wise Spending Analysis");
             System.out.println("6. Highest Expense");
             System.out.println("7. Lowest Expense");
             System.out.println("8. Sort Expenses by Date");
@@ -38,181 +33,152 @@ public class Main {
             System.out.println("10. Monthly Spending Summary");
             System.out.println("11. Exit");
 
-            System.out.print("\nEnter your choice: ");
+            System.out.print("Enter your choice: ");
 
             try {
-
                 choice = Integer.parseInt(sc.nextLine());
 
-            } catch (Exception e) {
+                switch (choice) {
 
-                System.out.println("Invalid input! Enter a number.");
-                continue;
-            }
+                    case 1:
+                        addExpense();
+                        break;
 
-            switch (choice) {
+                    case 2:
+                        viewExpenses();
+                        break;
 
-                case 1:
-                    addExpense();
-                    break;
+                    case 3:
+                        updateExpense();
+                        break;
 
-                case 2:
-                    viewExpenses();
-                    break;
+                    case 4:
+                        deleteExpense();
+                        break;
 
-                case 3:
-                    updateExpense();
-                    break;
+                    case 5:
+                        CategoryAnalysis.showCategoryAnalysis();
+                        break;
 
-                case 4:
-                    deleteExpense();
-                    break;
+                    case 6:
+                        ExpenseAnalyzer.findHighestExpense();
+                        break;
 
-                case 5:
-                    System.out.println("Category-wise Spending Module");
-                    break;
+                    case 7:
+                        ExpenseAnalyzer.findLowestExpense();
+                        break;
 
-                case 6:
-                    System.out.println("Highest Expense Module");
-                    break;
+                    case 8:
+                        System.out.println("Sort by Date module is not connected yet.");
+                        break;
 
-                case 7:
-                    System.out.println("Lowest Expense Module");
-                    break;
+                    case 9:
+                        System.out.println("Sort by Amount module is not connected yet.");
+                        break;
 
-                case 8:
-                    System.out.println("Sort Expenses by Date Module");
-                    break;
+                    case 10:
+                        System.out.println("Monthly Report module is not connected yet.");
+                        break;
 
-                case 9:
-                    System.out.println("Sort Expenses by Amount Module");
-                    break;
+                    case 11:
+                        saveExpenses();
+                        System.out.println("Thank you for using Smart Expense Pattern Analyzer!");
+                        break;
 
-                case 10:
-                    System.out.println("Monthly Spending Summary Module");
-                    break;
+                    default:
+                        System.out.println("Invalid choice! Please try again.");
+                }
 
-                case 11:
-                    System.out.println("\nThank you for using Smart Expense Pattern Analyzer!");
-                    break;
-
-                default:
-                    System.out.println("Invalid choice! Please try again.");
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid number!");
+                choice = 0;
             }
 
         } while (choice != 11);
-
     }
 
-
-    // ADD NEW EXPENSE
-
+    // Add New Expense
     public static void addExpense() {
 
-        System.out.print("\nEnter expense description: ");
-
+        System.out.print("Enter expense description: ");
         String description = sc.nextLine();
 
         if (description.trim().isEmpty()) {
-
             System.out.println("Description cannot be empty!");
             return;
         }
 
-        System.out.print("Enter amount: ");
-
         double amount;
 
         try {
-
+            System.out.print("Enter amount: ");
             amount = Double.parseDouble(sc.nextLine());
 
             if (amount <= 0 || Double.isInfinite(amount) || Double.isNaN(amount)) {
-
-                System.out.println("Amount must be greater than zero!");
+                System.out.println("Please enter a valid positive amount!");
                 return;
             }
 
-        } catch (Exception e) {
-
+        } catch (NumberFormatException e) {
             System.out.println("Invalid amount!");
             return;
         }
 
-        System.out.print("Enter date (yyyy-mm-dd): ");
-
         LocalDate date;
 
         try {
-
+            System.out.print("Enter date (YYYY-MM-DD): ");
             date = LocalDate.parse(sc.nextLine());
 
         } catch (Exception e) {
-
-            System.out.println("Invalid date! Use yyyy-mm-dd format.");
+            System.out.println("Invalid date format!");
             return;
         }
 
-        // AUTOMATIC CATEGORIZATION
-
         String category = CategoryManager.getCategory(description);
 
-        Expense e = new Expense(id, description, amount, date, category);
+        Expense expense = new Expense(id, description, amount, date, category);
 
-        expenses.add(e);
+        expenses.add(expense);
 
         id++;
 
         saveExpenses();
 
-        System.out.println("\nExpense added successfully!");
-        System.out.println("Assigned Category: " + category);
+        System.out.println("Expense added successfully!");
+        System.out.println("Automatically Assigned Category: " + category);
     }
 
-
-    // VIEW ALL EXPENSES
-
+    // View All Expenses
     public static void viewExpenses() {
 
         if (expenses.isEmpty()) {
-
-            System.out.println("\nNo expenses found!");
-
-        } else {
-
-            System.out.println("\n========== ALL EXPENSES ==========");
-
-            for (Expense expens : expenses) {
-
-                expens.displayExpense();
-
-            }
-
-            System.out.println("-----------------------------------");
-        }
-    }
-
-
-    // UPDATE EXPENSE
-
-    public static void updateExpense() {
-
-        if (expenses.isEmpty()) {
-
-            System.out.println("\nNo expenses available to update!");
+            System.out.println("No expenses available!");
             return;
         }
 
-        System.out.print("\nEnter Expense ID to update: ");
+        System.out.println("\n========== ALL EXPENSES ==========");
+
+        for (Expense expens : expenses) {
+            expens.displayExpense();
+        }
+    }
+
+    // Update Expense
+    public static void updateExpense() {
+
+        if (expenses.isEmpty()) {
+            System.out.println("No expenses available to update!");
+            return;
+        }
+
+        System.out.print("Enter Expense ID to update: ");
 
         int searchId;
 
         try {
-
             searchId = Integer.parseInt(sc.nextLine());
-
-        } catch (Exception e) {
-
+        } catch (NumberFormatException e) {
             System.out.println("Invalid ID!");
             return;
         }
@@ -221,16 +187,10 @@ public class Main {
 
             if (e.id == searchId) {
 
-                System.out.println("\nExpense Found!");
-
-                e.displayExpense();
-
-                System.out.print("\nEnter new description: ");
-
+                System.out.print("Enter new description: ");
                 String description = sc.nextLine();
 
                 if (description.trim().isEmpty()) {
-
                     System.out.println("Description cannot be empty!");
                     return;
                 }
@@ -240,32 +200,26 @@ public class Main {
                 double amount;
 
                 try {
-
                     amount = Double.parseDouble(sc.nextLine());
 
                     if (amount <= 0 || Double.isInfinite(amount) || Double.isNaN(amount)) {
-
                         System.out.println("Invalid amount!");
                         return;
                     }
 
-                } catch (Exception ex) {
-
+                } catch (NumberFormatException ex) {
                     System.out.println("Invalid amount!");
                     return;
                 }
 
-                System.out.print("Enter new date (yyyy-mm-dd): ");
+                System.out.print("Enter new date (YYYY-MM-DD): ");
 
                 LocalDate date;
 
                 try {
-
                     date = LocalDate.parse(sc.nextLine());
-
                 } catch (Exception ex) {
-
-                    System.out.println("Invalid date!");
+                    System.out.println("Invalid date format!");
                     return;
                 }
 
@@ -273,43 +227,35 @@ public class Main {
                 e.amount = amount;
                 e.date = date;
 
-                // UPDATE CATEGORY AUTOMATICALLY
-
                 e.category = CategoryManager.getCategory(description);
 
                 saveExpenses();
 
-                System.out.println("\nExpense updated successfully!");
+                System.out.println("Expense updated successfully!");
                 System.out.println("New Category: " + e.category);
 
                 return;
             }
         }
 
-        System.out.println("\nExpense ID not found!");
+        System.out.println("Expense ID not found!");
     }
 
-
-    // DELETE EXPENSE
-
+    // Delete Expense
     public static void deleteExpense() {
 
         if (expenses.isEmpty()) {
-
-            System.out.println("\nNo expenses available to delete!");
+            System.out.println("No expenses available to delete!");
             return;
         }
 
-        System.out.print("\nEnter Expense ID to delete: ");
+        System.out.print("Enter Expense ID to delete: ");
 
         int searchId;
 
         try {
-
             searchId = Integer.parseInt(sc.nextLine());
-
-        } catch (Exception e) {
-
+        } catch (NumberFormatException e) {
             System.out.println("Invalid ID!");
             return;
         }
@@ -322,56 +268,44 @@ public class Main {
 
                 saveExpenses();
 
-                System.out.println("\nExpense deleted successfully!");
+                System.out.println("Expense deleted successfully!");
 
                 return;
             }
         }
 
-        System.out.println("\nExpense ID not found!");
+        System.out.println("Expense ID not found!");
     }
 
-
-    // SAVE EXPENSES TO FILE
-
+    // Save Expenses in File
     public static void saveExpenses() {
 
         try {
-
-            ObjectOutputStream out = new ObjectOutputStream(
-                    new FileOutputStream(FILE_NAME)
-            );
+            ObjectOutputStream out =
+                    new ObjectOutputStream(new FileOutputStream(FILE_NAME));
 
             out.writeObject(expenses);
 
             out.close();
 
         } catch (IOException e) {
-
-            System.out.println("Error saving expenses: " + e.getMessage());
+            System.out.println("Error while saving expenses!");
         }
     }
 
-
-    // LOAD EXPENSES FROM FILE
-
+    // Load Expenses from File
     @SuppressWarnings("unchecked")
     public static void loadExpenses() {
 
         File file = new File(FILE_NAME);
 
         if (!file.exists()) {
-
-            System.out.println("No previous expense records found.");
-
             return;
         }
 
         try {
-
-            ObjectInputStream in = new ObjectInputStream(
-                    new FileInputStream(FILE_NAME)
-            );
+            ObjectInputStream in =
+                    new ObjectInputStream(new FileInputStream(FILE_NAME));
 
             expenses = (ArrayList<Expense>) in.readObject();
 
@@ -380,7 +314,6 @@ public class Main {
             for (Expense expens : expenses) {
 
                 if (expens.id >= id) {
-
                     id = expens.id + 1;
                 }
             }
@@ -388,9 +321,7 @@ public class Main {
             System.out.println("Previous expenses loaded successfully!");
 
         } catch (Exception e) {
-
-            System.out.println("Error loading expenses: " + e.getMessage());
+            System.out.println("Error while loading expenses!");
         }
     }
-
 }
