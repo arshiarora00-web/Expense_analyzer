@@ -1,7 +1,8 @@
-
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.time.LocalDate;
 import java.io.*;
 
 public class Main {
@@ -9,6 +10,8 @@ public class Main {
     public static ArrayList<Expense> expenses = new ArrayList<>();
 
     public static Scanner sc = new Scanner(System.in);
+    public static BudgetService budgetService = new BudgetService();
+    public static DateFilterService dateFilterService = new DateFilterService();
 
     public static int id = 1;
 
@@ -35,7 +38,10 @@ public class Main {
             System.out.println("11. Search Expense by ID");
             System.out.println("12. Search Expenses by Category");
             System.out.println("13. Yearly Report");
-            System.out.println("14. Exit");
+            System.out.println("14. Set Monthly Budget");
+            System.out.println("15. Budget Report (Compare / Remaining / Warning)");
+            System.out.println("16. Total Expenses for Date Range");
+            System.out.println("17. Exit");
 
             System.out.print("Enter your choice: ");
 
@@ -101,6 +107,18 @@ public class Main {
                         break;
 
                     case 14:
+                        setMonthlyBudget();
+                        break;
+
+                    case 15:
+                        showBudgetReport();
+                        break;
+
+                    case 16:
+                        showDateRangeTotal();
+                        break;
+
+                    case 17:
                         System.out.println("Exiting program...");
                         break;
 
@@ -113,7 +131,7 @@ public class Main {
                 choice = 0;
             }
 
-        } while (choice != 14);
+        } while (choice != 17);
     }
 
     // Add New Expense
@@ -167,6 +185,62 @@ public class Main {
 
         System.out.println("Expense added successfully!");
         System.out.println("Automatically Assigned Category: " + category);
+
+        // Budget warning after adding an expense
+        try {
+            budgetService.checkBudget(expenses, YearMonth.from(date));
+        } catch (BudgetExceededException ex) {
+            System.out.println("WARNING: " + ex.getMessage());
+        }
+    }
+
+    // Set Monthly Budget
+    public static void setMonthlyBudget() {
+        try {
+            System.out.print("Enter month (YYYY-MM): ");
+            YearMonth month = YearMonth.parse(sc.nextLine().trim());
+
+            System.out.print("Enter budget amount: ");
+            double amount = Double.parseDouble(sc.nextLine().trim());
+
+            budgetService.setMonthlyBudget(month, amount);
+            System.out.println("Budget set for " + month + " successfully!");
+
+        } catch (DateTimeParseException | NumberFormatException e) {
+            System.out.println("Invalid input! Use YYYY-MM for month and a number for amount.");
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    // Budget Report: compare spending, remaining budget, warning
+    public static void showBudgetReport() {
+        try {
+            System.out.print("Enter month (YYYY-MM): ");
+            YearMonth month = YearMonth.parse(sc.nextLine().trim());
+            budgetService.printBudgetReport(expenses, month);
+
+        } catch (DateTimeParseException e) {
+            System.out.println("Invalid month! Use YYYY-MM.");
+        }
+    }
+
+    // Total expenses between two dates
+    public static void showDateRangeTotal() {
+        try {
+            System.out.print("Enter start date (YYYY-MM-DD): ");
+            LocalDate from = LocalDate.parse(sc.nextLine().trim());
+
+            System.out.print("Enter end date (YYYY-MM-DD): ");
+            LocalDate to = LocalDate.parse(sc.nextLine().trim());
+
+            dateFilterService.printRangeSummary(expenses, from, to);
+
+        } catch (DateTimeParseException e) {
+            System.out.println("Invalid date! Use YYYY-MM-DD.");
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     // View All Expenses
