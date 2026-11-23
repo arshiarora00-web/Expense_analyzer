@@ -1,122 +1,97 @@
-# 💸 Smart Expense Pattern Analyzer
+# Smart Expense Pattern Analyzer
 
-A console-based Java application that records daily expenses, stores them in a database, and analyzes spending patterns (category-wise totals, monthly trends, top spends, and overspending alerts).
+A console-based Java application for tracking daily expenses and understanding where the money goes. Expenses are saved to disk between runs, grouped into categories automatically, and summarised by month and year. You can also set a monthly budget and get warned when you go over it.
 
-> **Course:** Programming in Java (25CSE0202) | **B.E. CSE, 3rd Sem** | Chitkara University
-> **Evaluation:** Continuous Evaluation – Project Milestone 3
-> **Type:** Group Project
+Built as a group project for Programming in Java (25CSE0202), B.E. CSE, 3rd semester, Chitkara University.
 
-## 👥 Team
+## What it does
 
-| Member | Roll No |
-|---|---|
-| `Arshia Arora` | `2510990441` |
-| `Sanchi` | `2510990450` |
-| `Sakshi` | `2510990133` |
-| `Vrinda` | `2510990187` |
+- Add, view, update and delete expenses
+- Assigns a category automatically from the description
+- Category-wise spending breakdown
+- Highest and lowest expense
+- Sort by date or amount
+- Search by expense ID or category
+- Monthly and yearly reports
+- Monthly budgets, with a report showing spent, remaining and percentage used
+- Warning when a month goes over budget, including right after adding an expense
+- Total spending between any two dates
 
----
+## Running it
 
-## ✨ Features
-
-- Add, view, update and delete expenses (full CRUD)
-- Category-wise and month-wise spending summary
-- Top-N highest expenses and average daily spend
-- Budget limit per category with overspending alerts
-- Sort and filter by date, amount or category
-- Import / export expenses from CSV files
-- Background auto-save and report generation using threads
-
----
-
-## 🧩 Syllabus Concepts Used
-
-| Syllabus Topic | Where It Is Used |
-|---|---|
-| **OOP** (classes, objects, constructors, inheritance, polymorphism, abstraction/interfaces) | `Expense`, `RecurringExpense extends Expense`, `Analyzer` interface, `Category` |
-| **Strings & StringBuilder** | Formatting reports, parsing CSV lines, input validation |
-| **Wrapper classes** | Parsing amounts/dates (`Double.parseDouble`, `Integer.valueOf`) |
-| **Exception Handling** (try/catch/finally, throw/throws, custom exceptions) | `InvalidExpenseException`, `BudgetExceededException` |
-| **Collections Framework** (ArrayList, LinkedList, HashMap, LinkedHashMap, TreeMap, HashSet, TreeSet, PriorityQueue) | Expense list, category totals (`HashMap`), sorted monthly report (`TreeMap`), top-N spends (`PriorityQueue`), unique categories (`TreeSet`) |
-| **Iterator / ListIterator, Comparable / Comparator, Collections utility** | Sorting by amount/date, safe removal while iterating |
-| **Multithreading** (Thread, Runnable, sleep, join, synchronization, wait/notify) | Auto-save thread, report-generator thread, producer-consumer for import |
-| **JDBC** (DriverManager, Connection, PreparedStatement, ResultSet) | `ExpenseDAO` with CRUD on SQLite/MySQL |
-| **Lambda & Stream API** (filter, map, sorted, distinct, limit, skip) | Filtering, grouping and summarizing expenses |
-| **Generics** (generic classes/methods, bounded types) | `Repository<T>`, generic `Utils.printList()` |
-| **File Handling** (FileReader/Writer, streams, CSV read-write) | CSV import/export, report files |
-
----
-
-## 🗂️ Project Structure
-
-```
-SmartExpenseAnalyzer/
-├── src/
-│   ├── model/        # Expense, RecurringExpense, Category
-│   ├── dao/          # ExpenseDAO (JDBC), DBConnection
-│   ├── service/      # AnalyzerService (streams, collections)
-│   ├── thread/       # AutoSaveTask, ReportTask
-│   ├── exception/    # InvalidExpenseException, BudgetExceededException
-│   ├── util/         # CsvHandler, Repository<T>, Validator
-│   └── Main.java     # Menu-driven entry point
-├── data/             # sample CSV files
-├── lib/              # JDBC driver (.jar)
-└── README.md
-```
-
----
-
-## ⚙️ Setup & Run
-
-**Requirements:** JDK 17+, SQLite/MySQL JDBC driver (placed in `lib/`)
+You need JDK 17 or newer.
 
 ```bash
-git clone https://github.com/<your-username>/smart-expense-pattern-analyzer.git
-cd smart-expense-pattern-analyzer
+git clone https://github.com/arshiarora00-web/Expense_analyzer.git
+cd Expense_analyzer
 
-# compile
-javac -cp "lib/*" -d out $(find src -name "*.java")
-
-# run
-java -cp "out:lib/*" Main        # use ";" instead of ":" on Windows
+javac -d out src/*.java
+java -cp out Main
 ```
 
----
+Expenses are stored in `expenses.dat` and budgets in `budgets.dat`, both created in the folder you run the program from.
 
-## 🖥️ Sample Menu
-
-```
-===== SMART EXPENSE PATTERN ANALYZER =====
-1. Add Expense          5. Category Summary
-2. View All             6. Monthly Trend
-3. Update Expense       7. Top 5 Expenses
-4. Delete Expense       8. Import / Export CSV
-9. Set Budget           0. Exit
-```
-
----
-
-## 📊 Sample Output
+## Menu
 
 ```
-Category Summary
-Food ........ ₹4,250
-Travel ...... ₹2,100
-Shopping .... ₹3,800
-⚠ Alert: Shopping budget exceeded by ₹800
+1.  Add New Expense                  10. Monthly Report
+2.  View All Expenses                11. Search Expense by ID
+3.  Update Expense                   12. Search Expenses by Category
+4.  Delete Expense                   13. Yearly Report
+5.  Category-wise Spending Analysis  14. Set Monthly Budget
+6.  Highest Expense                  15. Budget Report
+7.  Lowest Expense                   16. Total Expenses for Date Range
+8.  Sort Expenses by Date            17. Exit
+9.  Sort Expenses by Amount
 ```
 
----
+Dates are entered as `YYYY-MM-DD`, and months as `YYYY-MM`.
 
-## 🔮 Future Scope
+### Budget example
 
-- GUI using JavaFX / Swing
-- Charts for spending trends
-- Spending prediction using moving averages
-- Multi-user login
+```
+Enter your choice: 15
+Enter month (YYYY-MM): 2026-11
+===== Budget Report: 2026-11 =====
+Budget    : 5000.00
+Spent     : 6000.00 (120.0%)
+Remaining : -1000.00
+WARNING: Budget exceeded! Budget: 5000.00, Spent: 6000.00, Over by: 1000.00
+```
 
----
+Below the limit but past 80%, you get a softer heads-up instead of the over-budget warning.
 
-## 📄 License
+## Project layout
 
-For academic use – Chitkara University, CSE Department.
+```
+src/
+  Main.java                    menu and input handling
+  Expense.java                 the expense record
+  CategoryManager.java         picks a category from the description
+  CategoryAnalysis.java        category-wise breakdown
+  ExpenseAnalyzer.java         highest / lowest expense
+  SortingSearching.java        sorting and search
+  MonthlyYearlyReports.java    monthly and yearly reports
+  BudgetService.java           budgets, comparison, remaining amount, warnings
+  DateFilterService.java       date range filter and total
+  BudgetExceededException.java
+```
+
+## Java concepts used
+
+OOP, collections (`ArrayList`, streams), custom exceptions, exception handling, file handling with object serialization, and the `java.time` API.
+
+## Team
+
+| Name | Roll no. |
+|---|---|
+| Arshia Arora | 2510990441 |
+| Sanchi | 2510990450 |
+| Sakshi | 2510990133 |
+| Vrinda | 2510990187 |
+
+## Possible next steps
+
+A GUI (JavaFX or Swing), spending charts, simple prediction from past months, and multi-user login.
+
+For academic use, Chitkara University, CSE Department.
