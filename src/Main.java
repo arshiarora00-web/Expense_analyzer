@@ -1,3 +1,4 @@
+
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.time.LocalDate;
@@ -30,10 +31,11 @@ public class Main {
             System.out.println("7. Lowest Expense");
             System.out.println("8. Sort Expenses by Date");
             System.out.println("9. Sort Expenses by Amount");
-            System.out.println("10. Monthly Spending Summary");
+            System.out.println("10. Monthly Report");
             System.out.println("11. Search Expense by ID");
             System.out.println("12. Search Expenses by Category");
-            System.out.println("13. Exit");
+            System.out.println("13. Yearly Report");
+            System.out.println("14. Exit");
 
             System.out.print("Enter your choice: ");
 
@@ -79,24 +81,26 @@ public class Main {
                         break;
 
                     case 10:
-                        System.out.println("Monthly Report module is not connected yet.");
+                        MonthlyYearlyReports.showMonthlyReport();
                         break;
 
                     case 11:
                         System.out.print("Enter Expense ID: ");
                         int searchId = Integer.parseInt(sc.nextLine());
-
                         SortingSearching.searchById(searchId);
                         break;
 
                     case 12:
                         System.out.print("Enter Category: ");
                         String category = sc.nextLine();
-
                         SortingSearching.searchByCategory(category);
                         break;
 
                     case 13:
+                        MonthlyYearlyReports.showYearlyReport();
+                        break;
+
+                    case 14:
                         System.out.println("Exiting program...");
                         break;
 
@@ -109,7 +113,7 @@ public class Main {
                 choice = 0;
             }
 
-        } while (choice != 13);
+        } while (choice != 14);
     }
 
     // Add New Expense
@@ -129,7 +133,8 @@ public class Main {
             System.out.print("Enter amount: ");
             amount = Double.parseDouble(sc.nextLine());
 
-            if (amount <= 0 || Double.isInfinite(amount) || Double.isNaN(amount)) {
+            if (amount <= 0 || Double.isInfinite(amount)
+                    || Double.isNaN(amount)) {
                 System.out.println("Please enter a valid positive amount!");
                 return;
             }
@@ -174,8 +179,8 @@ public class Main {
 
         System.out.println("\n========== ALL EXPENSES ==========");
 
-        for (Expense expens : expenses) {
-            expens.displayExpense();
+        for (Expense expense : expenses) {
+            expense.displayExpense();
         }
     }
 
@@ -217,7 +222,8 @@ public class Main {
                 try {
                     amount = Double.parseDouble(sc.nextLine());
 
-                    if (amount <= 0 || Double.isInfinite(amount) || Double.isNaN(amount)) {
+                    if (amount <= 0 || Double.isInfinite(amount)
+                            || Double.isNaN(amount)) {
                         System.out.println("Invalid amount!");
                         return;
                     }
@@ -326,10 +332,10 @@ public class Main {
 
             in.close();
 
-            for (Expense expens : expenses) {
+            for (Expense expense : expenses) {
 
-                if (expens.id >= id) {
-                    id = expens.id + 1;
+                if (expense.id >= id) {
+                    id = expense.id + 1;
                 }
             }
 
