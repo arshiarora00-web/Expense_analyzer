@@ -1,7 +1,6 @@
-import java.util.Collections;
-import java.util.Comparator;
-
 public class SortingSearching {
+
+    // Sort Expenses by Date (Ascending)
     public static void sortByDate() {
 
         if (Main.expenses.isEmpty()) {
@@ -9,16 +8,30 @@ public class SortingSearching {
             return;
         }
 
-        Collections.sort(Main.expenses,
-                Comparator.comparing(e -> e.date));
+        for (int i = 0; i < Main.expenses.size() - 1; i++) {
 
-        System.out.println("Expenses sorted by date:");
+            for (int j = i + 1; j < Main.expenses.size(); j++) {
 
-        for (Expense e : Main.expenses) {
-            e.displayExpense();
+                if (Main.expenses.get(i).date.isAfter(Main.expenses.get(j).date)) {
+
+                    Expense temp = Main.expenses.get(i);
+
+                    Main.expenses.set(i, Main.expenses.get(j));
+
+                    Main.expenses.set(j, temp);
+                }
+            }
+        }
+
+        System.out.println("\nExpenses sorted by date:");
+
+        for (int i = 0; i < Main.expenses.size(); i++) {
+            Main.expenses.get(i).displayExpense();
         }
     }
 
+
+    // Sort Expenses by Amount (Ascending)
     public static void sortByAmount() {
 
         if (Main.expenses.isEmpty()) {
@@ -26,28 +39,49 @@ public class SortingSearching {
             return;
         }
 
-        Collections.sort(Main.expenses,
-                Comparator.comparingDouble(e -> e.amount));
+        for (int i = 0; i < Main.expenses.size() - 1; i++) {
 
-        System.out.println("Expenses sorted by amount:");
+            for (int j = i + 1; j < Main.expenses.size(); j++) {
 
-        for (Expense e : Main.expenses) {
-            e.displayExpense();
+                if (Main.expenses.get(i).amount > Main.expenses.get(j).amount) {
+
+                    Expense temp = Main.expenses.get(i);
+
+                    Main.expenses.set(i, Main.expenses.get(j));
+
+                    Main.expenses.set(j, temp);
+                }
+            }
+        }
+
+        System.out.println("\nExpenses sorted by amount:");
+
+        for (int i = 0; i < Main.expenses.size(); i++) {
+            Main.expenses.get(i).displayExpense();
         }
     }
 
+
+    // Search Expense by ID
     public static void searchById(int searchId) {
+
+        if (Main.expenses.isEmpty()) {
+            System.out.println("No expenses available!");
+            return;
+        }
 
         boolean found = false;
 
-        for (Expense e : Main.expenses) {
+        for (int i = 0; i < Main.expenses.size(); i++) {
 
-            if (e.id == searchId) {
+            if (Main.expenses.get(i).id == searchId) {
 
                 System.out.println("Expense Found!");
-                e.displayExpense();
+
+                Main.expenses.get(i).displayExpense();
 
                 found = true;
+
                 break;
             }
         }
@@ -57,15 +91,28 @@ public class SortingSearching {
         }
     }
 
+
+    // Search Expenses by Category
     public static void searchByCategory(String searchCategory) {
+
+        if (Main.expenses.isEmpty()) {
+            System.out.println("No expenses available!");
+            return;
+        }
+
+        if (searchCategory == null || searchCategory.trim().isEmpty()) {
+            System.out.println("Category cannot be empty!");
+            return;
+        }
 
         boolean found = false;
 
-        for (Expense e : Main.expenses) {
+        for (int i = 0; i < Main.expenses.size(); i++) {
 
-            if (e.category.equalsIgnoreCase(searchCategory)) {
+            if (Main.expenses.get(i).category != null &&
+                    Main.expenses.get(i).category.equalsIgnoreCase(searchCategory.trim())) {
 
-                e.displayExpense();
+                Main.expenses.get(i).displayExpense();
 
                 found = true;
             }

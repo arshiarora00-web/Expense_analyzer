@@ -25,15 +25,15 @@ public class Main {
 
         do {
             System.out.println("\n========== SMART EXPENSE PATTERN ANALYZER ==========");
-            System.out.println("1. Add New Expense");
-            System.out.println("2. View All Expenses");
-            System.out.println("3. Update Expense");
-            System.out.println("4. Delete Expense");
-            System.out.println("5. Category-wise Spending Analysis");
-            System.out.println("6. Highest Expense");
-            System.out.println("7. Lowest Expense");
-            System.out.println("8. Sort Expenses by Date");
-            System.out.println("9. Sort Expenses by Amount");
+            System.out.println("1.  Add New Expense");
+            System.out.println("2.  View All Expenses");
+            System.out.println("3.  Update Expense");
+            System.out.println("4.  Delete Expense");
+            System.out.println("5.  Category-wise Spending Analysis");
+            System.out.println("6.  Highest Expense");
+            System.out.println("7.  Lowest Expense");
+            System.out.println("8.  Sort Expenses by Date");
+            System.out.println("9.  Sort Expenses by Amount");
             System.out.println("10. Monthly Report");
             System.out.println("11. Search Expense by ID");
             System.out.println("12. Search Expenses by Category");
@@ -138,9 +138,9 @@ public class Main {
     public static void addExpense() {
 
         System.out.print("Enter expense description: ");
-        String description = sc.nextLine();
+        String description = sc.nextLine().trim();
 
-        if (description.trim().isEmpty()) {
+        if (description.isEmpty()) {
             System.out.println("Description cannot be empty!");
             return;
         }
@@ -149,10 +149,9 @@ public class Main {
 
         try {
             System.out.print("Enter amount: ");
-            amount = Double.parseDouble(sc.nextLine());
+            amount = Double.parseDouble(sc.nextLine().trim());
 
-            if (amount <= 0 || Double.isInfinite(amount)
-                    || Double.isNaN(amount)) {
+            if (amount <= 0 || !Double.isFinite(amount)) {
                 System.out.println("Please enter a valid positive amount!");
                 return;
             }
@@ -166,9 +165,9 @@ public class Main {
 
         try {
             System.out.print("Enter date (YYYY-MM-DD): ");
-            date = LocalDate.parse(sc.nextLine());
+            date = LocalDate.parse(sc.nextLine().trim());
 
-        } catch (Exception e) {
+        } catch (DateTimeParseException e) {
             System.out.println("Invalid date format!");
             return;
         }
@@ -183,8 +182,8 @@ public class Main {
 
         saveExpenses();
 
+        System.out.println("Category: " + category);
         System.out.println("Expense added successfully!");
-        System.out.println("Automatically Assigned Category: " + category);
 
         // Budget warning after adding an expense
         try {
@@ -196,6 +195,7 @@ public class Main {
 
     // Set Monthly Budget
     public static void setMonthlyBudget() {
+
         try {
             System.out.print("Enter month (YYYY-MM): ");
             YearMonth month = YearMonth.parse(sc.nextLine().trim());
@@ -204,20 +204,24 @@ public class Main {
             double amount = Double.parseDouble(sc.nextLine().trim());
 
             budgetService.setMonthlyBudget(month, amount);
+
             System.out.println("Budget set for " + month + " successfully!");
 
         } catch (DateTimeParseException | NumberFormatException e) {
             System.out.println("Invalid input! Use YYYY-MM for month and a number for amount.");
+
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
         }
     }
 
-    // Budget Report: compare spending, remaining budget, warning
+    // Budget Report
     public static void showBudgetReport() {
+
         try {
             System.out.print("Enter month (YYYY-MM): ");
             YearMonth month = YearMonth.parse(sc.nextLine().trim());
+
             budgetService.printBudgetReport(expenses, month);
 
         } catch (DateTimeParseException e) {
@@ -227,6 +231,7 @@ public class Main {
 
     // Total expenses between two dates
     public static void showDateRangeTotal() {
+
         try {
             System.out.print("Enter start date (YYYY-MM-DD): ");
             LocalDate from = LocalDate.parse(sc.nextLine().trim());
@@ -238,6 +243,7 @@ public class Main {
 
         } catch (DateTimeParseException e) {
             System.out.println("Invalid date! Use YYYY-MM-DD.");
+
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
         }
@@ -272,6 +278,7 @@ public class Main {
 
         try {
             searchId = Integer.parseInt(sc.nextLine());
+
         } catch (NumberFormatException e) {
             System.out.println("Invalid ID!");
             return;
@@ -282,9 +289,9 @@ public class Main {
             if (e.id == searchId) {
 
                 System.out.print("Enter new description: ");
-                String description = sc.nextLine();
+                String description = sc.nextLine().trim();
 
-                if (description.trim().isEmpty()) {
+                if (description.isEmpty()) {
                     System.out.println("Description cannot be empty!");
                     return;
                 }
@@ -294,10 +301,9 @@ public class Main {
                 double amount;
 
                 try {
-                    amount = Double.parseDouble(sc.nextLine());
+                    amount = Double.parseDouble(sc.nextLine().trim());
 
-                    if (amount <= 0 || Double.isInfinite(amount)
-                            || Double.isNaN(amount)) {
+                    if (amount <= 0 || !Double.isFinite(amount)) {
                         System.out.println("Invalid amount!");
                         return;
                     }
@@ -312,8 +318,9 @@ public class Main {
                 LocalDate date;
 
                 try {
-                    date = LocalDate.parse(sc.nextLine());
-                } catch (Exception ex) {
+                    date = LocalDate.parse(sc.nextLine().trim());
+
+                } catch (DateTimeParseException ex) {
                     System.out.println("Invalid date format!");
                     return;
                 }
@@ -350,6 +357,7 @@ public class Main {
 
         try {
             searchId = Integer.parseInt(sc.nextLine());
+
         } catch (NumberFormatException e) {
             System.out.println("Invalid ID!");
             return;
@@ -375,16 +383,13 @@ public class Main {
     // Save Expenses in File
     public static void saveExpenses() {
 
-        try {
-            ObjectOutputStream out =
-                    new ObjectOutputStream(new FileOutputStream(FILE_NAME));
+        try (ObjectOutputStream out =
+                     new ObjectOutputStream(new FileOutputStream(FILE_NAME))) {
 
             out.writeObject(expenses);
 
-            out.close();
-
         } catch (IOException e) {
-            System.out.println("Error while saving expenses!");
+            System.out.println("Error while saving expenses: " + e.getMessage());
         }
     }
 
@@ -395,17 +400,16 @@ public class Main {
         File file = new File(FILE_NAME);
 
         if (!file.exists()) {
+            System.out.println("No previous expense data found.");
             return;
         }
 
-        try {
-            ObjectInputStream in =
-                    new ObjectInputStream(new FileInputStream(FILE_NAME));
+        try (ObjectInputStream in =
+                     new ObjectInputStream(new FileInputStream(file))) {
 
             expenses = (ArrayList<Expense>) in.readObject();
 
-            in.close();
-
+            // Find the next available Expense ID
             for (Expense expense : expenses) {
 
                 if (expense.id >= id) {
@@ -415,8 +419,17 @@ public class Main {
 
             System.out.println("Previous expenses loaded successfully!");
 
-        } catch (Exception e) {
-            System.out.println("Error while loading expenses!");
+        } catch (IOException e) {
+
+            System.out.println("Error while loading expenses: " + e.getMessage());
+
+        } catch (ClassNotFoundException e) {
+
+            System.out.println("Expense class not found!");
+
+        } catch (ClassCastException e) {
+
+            System.out.println("Invalid expense data in file!");
         }
     }
 }
